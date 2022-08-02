@@ -11,17 +11,15 @@ class Technique:
 		self.technical_description = technical_description
 		self.full_url = full_url
 		self.data_sources = data_sources
-		self.tactics = {}
 		self.groups = {}
 		self.software = {}
-		for i in thetactics:
-			self.tactics[i['fulltext']] = i
+		self.tactics = {i['fulltext']: i for i in thetactics}
 
 	def __str__(self):
-		return "{}: {}".format(self.ID,self.displaytitle)
+		return f"{self.ID}: {self.displaytitle}"
 
 	def __repr__(self):
-		return "{}: {}".format(self.ID,self.displaytitle)
+		return f"{self.ID}: {self.displaytitle}"
 
 	def search(self):
 		pass

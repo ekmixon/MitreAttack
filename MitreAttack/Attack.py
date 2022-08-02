@@ -21,15 +21,11 @@ class Attack:
 		self.linkCategories()
 
 	def getTechniques(self):
-		qualifiers = "|?Has ID"
-		qualifiers += "|?Has tactic"
+		qualifiers = "|?Has ID" + "|?Has tactic"
 		qualifiers += "|?Has technical description"
 		qualifiers += "|?Has data source"
 		qualifiers += "|limit=9999"
-		query = "{}[[Category:Technique]]{}".format(
-			self.baseURL,
-			qualifiers
-		)
+		query = f"{self.baseURL}[[Category:Technique]]{qualifiers}"
 		r = requests.get(query)
 		data = r.json()
 		for key in data['query']['results'].keys():
@@ -46,12 +42,8 @@ class Attack:
 			self.allTechniques[tempTechnique['printouts']['Has ID'][0]] = newTechnique
 
 	def getTactics(self):
-		qualifiers = "|?Has description"
-		qualifiers += "|limit=9999"
-		query = "{}[[Category:Tactic]]{}".format(
-			self.baseURL,
-			qualifiers
-		)
+		qualifiers = "|?Has description" + "|limit=9999"
+		query = f"{self.baseURL}[[Category:Tactic]]{qualifiers}"
 		r = requests.get(query)
 		data = r.json()
 		for key in data['query']['results'].keys():
@@ -64,16 +56,12 @@ class Attack:
 			)
 
 	def getGroups(self):
-		qualifiers = "|?Has ID"
-		qualifiers += "|?Has alias"
+		qualifiers = "|?Has ID" + "|?Has alias"
 		qualifiers += "|?Has description"
 		qualifiers += "|?Has technique"
 		qualifiers += "|?Uses software"
 		qualifiers += "|limit=9999"
-		query = "{}[[Category:Group]]{}".format(
-			self.baseURL,
-			qualifiers
-		)
+		query = f"{self.baseURL}[[Category:Group]]{qualifiers}"
 		r = requests.get(query)
 		data = r.json()
 		for key in data['query']['results'].keys():
@@ -90,15 +78,11 @@ class Attack:
 			)
 
 	def getSoftware(self):
-		qualifiers = "|?Has ID"
-		qualifiers += "|?Has alias"
+		qualifiers = "|?Has ID" + "|?Has alias"
 		qualifiers += "|?Has description"
 		qualifiers += "|?Has technique"
 		qualifiers += "|limit=9999"
-		query = "{}[[Category:Software]]{}".format(
-			self.baseURL,
-			qualifiers
-		)
+		query = f"{self.baseURL}[[Category:Software]]{qualifiers}"
 		r = requests.get(query)
 		data = r.json()
 		for key in data['query']['results'].keys():
@@ -144,37 +128,35 @@ class Attack:
 	def findTechnique(self, query):
 		resultList = []
 		for techKey in self.allTechniques.keys():
-			if self.allTechniques[techKey].displaytitle.lower().find(query.lower()) != -1:
-				if self.allTechniques[techKey] not in resultList:
-					resultList.append(self.allTechniques[techKey])
-		if len(resultList) == 1:
-			return resultList[0]
-		else:
-			return resultList
+			if (
+				self.allTechniques[techKey].displaytitle.lower().find(query.lower())
+				!= -1
+				and self.allTechniques[techKey] not in resultList
+			):
+				resultList.append(self.allTechniques[techKey])
+		return resultList[0] if len(resultList) == 1 else resultList
 
 	def findGroup(self, query):
 		resultList = []
 		for groupKey in self.allGroups.keys():
 			for alias in self.allGroups[groupKey].aliases:
-				if alias.lower().find(query.lower()) != -1:
-					if self.allGroups[groupKey] not in resultList:
-						resultList.append(self.allGroups[groupKey])
-		if len(resultList) == 1:
-			return resultList[0]
-		else:
-			return resultList
+				if (
+					alias.lower().find(query.lower()) != -1
+					and self.allGroups[groupKey] not in resultList
+				):
+					resultList.append(self.allGroups[groupKey])
+		return resultList[0] if len(resultList) == 1 else resultList
 
 	def findSoftware(self, query):
 		resultList = []
 		for softwareKey in self.allSoftware.keys():
 			for alias in self.allSoftware[softwareKey].aliases:
-				if alias.lower().find(query.lower()) != -1:
-					if self.allSoftware[softwareKey] not in resultList:
-						resultList.append(self.allSoftware[softwareKey])
-		if len(resultList) == 1:
-			return resultList[0]
-		else:
-			return resultList
+				if (
+					alias.lower().find(query.lower()) != -1
+					and self.allSoftware[softwareKey] not in resultList
+				):
+					resultList.append(self.allSoftware[softwareKey])
+		return resultList[0] if len(resultList) == 1 else resultList
 
 	def search(self, query):
 		# query = [{'field': field, 'value': value}]
@@ -199,11 +181,7 @@ class Attack:
 					if current.find(q['value'].lower()) != -1:
 						matches += 1
 						continue
-			if matches == numQueries:
-				if self.allTechniques[techKey] not in resultList:
-					resultList.append(self.allTechniques[techKey])
+			if matches == numQueries and self.allTechniques[techKey] not in resultList:
+				resultList.append(self.allTechniques[techKey])
 
-		if len(resultList) == 1:
-			return resultList[0]
-		else:
-			return resultList
+		return resultList[0] if len(resultList) == 1 else resultList

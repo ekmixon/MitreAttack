@@ -11,18 +11,16 @@ class Group:
 		self.description = description
 		self.fullurl = fullurl
 		self.aliases = aliases
-		self.techniques = {}
 		self.software = {}
-		for tech in techniques:
-			self.techniques[tech['fulltext'].split('/')[1]] = tech
+		self.techniques = {tech['fulltext'].split('/')[1]: tech for tech in techniques}
 		for item in software:
 			self.software[item['fulltext'].split('/')[1]] = item
 
 	def __str__(self):
-		return "{}: {}".format(self.ID, self.displaytitle)
+		return f"{self.ID}: {self.displaytitle}"
 
 	def __repr__(self):
-		return "{}: {}".format(self.ID, self.displaytitle)
+		return f"{self.ID}: {self.displaytitle}"
 
 	def search(self,query):
 		pass
